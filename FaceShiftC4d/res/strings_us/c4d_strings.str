@@ -1,0 +1,45 @@
+// C4D-StringResource
+
+STRINGTABLE
+{
+    STR_TITLE                   "FaceShiftC4d";
+    
+    MENU_FILE                   "File";
+    MENU_FILE_LOAD              "Load";
+    
+    MENU_HELP                   "Help";
+    MENU_HELP_HELP              "Help";
+    MENU_HELP_ABOUT             "About";
+    
+    TAB_ALL                      "";
+    TABGRP_LIVESTREAM            "LiveStreaming";
+    TABGRP_MAPPING               "Mapping";
+    GRP_NETWORK                  "Network";
+    GRP_FACESHIFTUSERDATA        "FaceShift-UserData";
+    GRP_FACESHIFT                "FaceShift";
+    GRP_RECORDING                "Recording";
+    
+    
+    TXT_PORT                 "Port:";
+    TXT_HOST                 "Host:";
+    STRING_HOST              "127.0.0.1";
+    BTN_CONNECT              "Connect";
+       
+    CBOX_ENABLE_TARGET       "Enable";
+    BTN_CREATE_TARGET        "Create UserData-Object";
+       
+    CBOX_LIVE               "Live";
+    BTN_CALIBRATE           "Calibrate";
+    TXT_HEADPOSE            "Head Pose:";
+    TXT_HEADPOSE1           "Relative";
+    TXT_HEADPOSE2           "Absolute";
+            
+    BTN_STARTREC            "Start Recording";
+    TXT_FRAMES              "Frames = ";
+    TXT_FRAMES2             "0 F";
+    TXT_SEC                 "0 s";
+    CBOX_PLAYBACK           "Playback C4D-TimeLine";
+    BTN_STOPREC             "Stop Recording";
+    
+    
+}
