@@ -18,7 +18,7 @@ class FileImporter(object):
     newkeyTime=0
     newKeyTimeOffset=0
     firstFrame=False
-    def __init__(self):
+    def __init__(self,fileName):
         self.allTracksDic={}
         self.blendshapesNames=[]
         self.blendshapesNames.append("EyeBlink_L") 
@@ -75,10 +75,13 @@ class FileImporter(object):
         self.blendshapesNames.append("Eye_R_Hor")
         
         self.newContainer = c4d.BaseObject(c4d.Onull) 
-        self.newContainer.SetName("FaceShiftData")  
+        self.newContainer.SetName(fileName)  
         doc=c4d.documents.GetActiveDocument()
-        doc.InsertObject(self.newContainer) 
-           
+        if doc is not None:
+            doc.InsertObject(self.newContainer) 
+        if doc is None:
+            return
+            
         self.shapeTracks=[]   
         dataCount=0
         while dataCount<len(self.blendshapesNames):
@@ -393,12 +396,13 @@ class FileImporter(object):
         vec3.z = 1 - 2 * ( xx + yy );
         newMatrix=c4d.Matrix(vecOff,vec1,vec2,vec3)        
         return newMatrix
+        
 def main():
-    datei=c4d.storage.LoadDialog(c4d.FILESELECTTYPE_ANYTHING, "open FaceShift", c4d.FILESELECT_LOAD,"set")  
-    
+
+    datei=c4d.storage.LoadDialog(c4d.FILESELECTTYPE_ANYTHING, "open FaceShift", c4d.FILESELECT_LOAD,"set")      
     if datei!=None:  
-        fileImporter=FileImporter()
         fileName, fileExtension = os.path.splitext(datei)
+        fileImporter=FileImporter(fileName)
         #print fileExtension
         if fileExtension==".txt":
             fileImporter.importFileTxt(datei)
