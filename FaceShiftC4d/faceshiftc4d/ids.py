@@ -6,12 +6,18 @@ PLUGINID                        = 1029847
 STR_TITLE                     = 10100
 # Menus
 MENU_FILE                     = 20100
-MENU_FILE_LOAD                = 20101
+MENU_FILE_CLEAR                = 20101
+MENU_FILE_LOAD                = 20102
+MENU_FILE_SAVE                = 20103
+MENU_FILE_LOADRIG               = 20104
+MENU_FILE_SAVERIG                = 20105
+MENU_FILE_LOADREC               = 20106
+MENU_FILE_SAVEREC              = 20107
 
 MENU_HELP                      = 20200
 MENU_HELP_HELP                 = 20201
 MENU_HELP_ABOUT                = 20202
-
+MAINDIALOG_USERAREA= 20203
 TAB_ALL                      = 34000
 TABGRP_LIVESTREAM            = 34001
 TABGRP_MAPPING               = 34002
@@ -43,6 +49,6 @@ TXT_FRAMES             = 45016
 TXT_FRAMES2            = 45017
 TXT_SEC                = 45018
 CBOX_PLAYBACK          = 45019
-BTN_STOPREC            = 45020
+BTN_ADDREC            = 45020
 
 MAINDIALOG_USERAREA    = 41040

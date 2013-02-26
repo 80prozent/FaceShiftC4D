@@ -5,7 +5,13 @@ STRINGTABLE
     STR_TITLE                   "FaceShiftC4d";
     
     MENU_FILE                   "File";
-    MENU_FILE_LOAD              "Load";
+    MENU_FILE_CLEAR                "Clear Retargetting";
+    MENU_FILE_LOAD               "Load Retargetting";
+    MENU_FILE_SAVE               "Save Retargetting";
+    MENU_FILE_LOADRIG               "Load  FS Rig";
+    MENU_FILE_SAVERIG                "Save FS Rig";
+    MENU_FILE_LOADREC               "Load Recording";
+    MENU_FILE_SAVEREC              "Save Recording";
     
     MENU_HELP                   "Help";
     MENU_HELP_HELP              "Help";
@@ -39,7 +45,7 @@ STRINGTABLE
     TXT_FRAMES2             "0 F";
     TXT_SEC                 "0 s";
     CBOX_PLAYBACK           "Playback C4D-TimeLine";
-    BTN_STOPREC             "Stop Recording";
+    BTN_ADDREC             "Add Recording";
     
     
 }

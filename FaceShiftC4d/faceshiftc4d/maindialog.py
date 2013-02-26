@@ -6,20 +6,18 @@ from faceshiftc4d import faceshiftparser
 from faceshiftc4d import maindialogCreator
 from faceshiftc4d import maindialogHelpers
 from faceshiftc4d import faceShiftData
-
+from faceshiftc4d import fileloader
+from faceshiftc4d import renderthread
 from xml.dom import minidom
 import xml.dom.minidom as dom
 
-workerThread=None
-exchangeData=None
-enableObjects=[]
-enableStates=[] 
+workerThread=None# this will contain the Thread that the TCP/IP-Socket lives in
+exchangeData=None# this is a class to hold all date that needs to be accessed from workerThread and MainThread 
 
-class MyThread(c4d.threading.C4DThread):   
-    global exchangeData   
+
+class MyThread(c4d.threading.C4DThread):  
     def Main(self):
-        global exchangeData    
-        print "THREAD CREATES MAINDATA"   
+        global exchangeData     
         faceshiftparser.FaceShiftParser(self,exchangeData)    
 
 
@@ -27,7 +25,6 @@ class MainDialog(c4d.gui.GeDialog):
     doc = c4d.documents.GetActiveDocument()      
     userarea = None
     faceShiftData=None 
-    
     host="127.0.0.1"
     port=33433
     live=False
@@ -53,6 +50,7 @@ class MainDialog(c4d.gui.GeDialog):
         exchangeData  = faceShiftData.ExchangeData()  
         self.Enable(ids.GRP_FACESHIFT,False)
         self.Enable(ids.GRP_RECORDING,False)
+        self.Enable(ids.BTN_ADDREC,False)
             
         return True
 
@@ -79,33 +77,61 @@ class MainDialog(c4d.gui.GeDialog):
 
             
     def Timer(self, msg):   
-        global exchangeData,workerThread    
-        if workerThread.IsRunning():
-            pass#print "worker runs = "+str(exchangeData.frameSuccess)+ "   /   "+str(exchangeData.frameTime)
-            if self.live==True:    
-                if exchangeData.frameSuccess==1:
-                    if self.targetLink is not None:
-                        self.targetLink.SetRelRot(exchangeData.rotationVector)
-                        self.targetLink.SetRelPos(exchangeData.positionVector)
-                        shapeCnt=0
-                        while shapeCnt<len(self.blendShapeTargets):
-                            if len(exchangeData.blendShapes)>shapeCnt:
-                                self.targetLink[self.blendShapeTargets[shapeCnt]] = exchangeData.blendShapes[shapeCnt]
-                            shapeCnt+=1
-                        eyeCnt=0
-                        while eyeCnt<len(self.eyeGazeTargets):
-                            if len(exchangeData.eyeGazeValues)>eyeCnt:
-                                self.targetLink[self.eyeGazeTargets[eyeCnt]] = exchangeData.eyeGazeValues[eyeCnt]
-                            eyeCnt+=1
+        global exchangeData,workerThread   
+        if exchangeData.isRecording==True:
+            self.SetString(ids.TXT_FRAMES2,len(exchangeData.recordetFrames))
+            self.SetString(ids.TXT_SEC,str(exchangeData.doneRecTime/1000)+" s")
+            if self.playbackC4d==True:
+                timea=float(float(exchangeData.startRecTimeC4D)+float(exchangeData.doneRecTime))/1000
+                print "hier = "+str(timea)
+                c4d.documents.GetActiveDocument().SetTime(c4d.BaseTime(timea))
                 c4d.EventAdd(c4d.EVENT_ANIMATE) 
+        if self.live==True: 
+            if not self.renderer.IsRunning(): 
+                shapeCnt=0
+                eyeCnt=0
+                while shapeCnt<len(self.controllData):
+                    if shapeCnt<48:
+                        if len(exchangeData.blendShapes)>shapeCnt:
+                            self.controll[self.controllData[shapeCnt]] =exchangeData.blendShapes[shapeCnt]
+                    shapeCnt+=1
+                    #if shapeCnt>=48:
+                    #    self.controll[self.controllData[shapeCnt]] =exchangeData.eyeGazeValues[eyeCnt]
+                    #    eyeCnt+=1
+                self.controll.SetRelRot(exchangeData.rotationVector)
+                self.renderer._doc.SetChanged()
+                #c4d.EventAdd() 
+                self.userarea.draw([self.renderer.bmp,0,0])
+                self.renderer.Start() 
+        #c4d.bitmaps.ShowBitmap(self.renderer.bmp)
+        if workerThread.IsRunning():
+            #c4d.bitmaps.ShowBitmap(self.renderer.bmp)
+            #print "worker runs = "+str(exchangeData.frameSuccess)+ "   /   "+str(exchangeData.frameTime)
+            if self.enabledUserData==True:  
+                if exchangeData.isNew==True:
+                    exchangeData.isNew=False
+                    if exchangeData.frameSuccess==1:
+                        if self.targetLink is not None:
+                            self.targetLink.SetRelRot(exchangeData.rotationVector)
+                            self.targetLink.SetRelPos(exchangeData.positionVector)
+                            shapeCnt=0
+                            while shapeCnt<len(self.blendShapeTargets):
+                                if len(exchangeData.blendShapes)>shapeCnt:
+                                    self.targetLink[self.blendShapeTargets[shapeCnt]] = exchangeData.blendShapes[shapeCnt]
+                                shapeCnt+=1
+                            eyeCnt=0
+                            while eyeCnt<len(self.eyeGazeTargets):
+                                if len(exchangeData.eyeGazeValues)>eyeCnt:
+                                    self.targetLink[self.eyeGazeTargets[eyeCnt]] = exchangeData.eyeGazeValues[eyeCnt]
+                                eyeCnt+=1
+                    c4d.EventAdd(c4d.EVENT_ANIMATE) 
         if not workerThread.IsRunning():  
             exchangeData.connected=False
             self.Enable(ids.GRP_FACESHIFT,False)
             self.Enable(ids.GRP_RECORDING,False)
             self.SetString(ids.BTN_CONNECT,"Connect")
-            if faceshiftparser.sock is not None:
-                faceshiftparser.sock.close()
-            self.SetTimer(0)
+            self.userarea.draw([])
+            #self.SetTimer(0)
  
     def Command(self, id, msg): 
         global exchangeData,workerThread          
@@ -113,10 +139,20 @@ class MainDialog(c4d.gui.GeDialog):
 
             
         if id == ids.BTN_CONNECT: 
+            newPath = os.path.join(os.path.split(os.path.abspath(os.path.dirname(__file__)))[0], "previewHeads", "80prozent.c4d")
+            newdoc=c4d.documents.LoadDocument(newPath, c4d.SCENEFILTER_OBJECTS|c4d.SCENEFILTER_MATERIALS)
+            self.renderer=renderthread.RenderThread(newdoc,c4d.RENDERFLAGS_EXTERNAL|c4d.RENDERFLAGS_PREVIEWRENDER)
+            self.renderer.Start()
+            #c4d.bitmaps.ShowBitmap(self.renderer.bmp)
+            self.controll=newdoc.GetObjects()[0].GetDown()
+            self.controllData=[]
+            for id, bc in self.controll.GetUserDataContainer():
+                self.controllData.append(id)
+                #print id, bc
             if exchangeData.connected==False:
                 exchangeData.connected=True
                 self.Enable(ids.GRP_FACESHIFT,True)
-                #self.Enable(ids.GRP_RECORDING,True)
+                self.Enable(ids.GRP_RECORDING,True)
                 self.SetString(ids.BTN_CONNECT,"Disconnect")
                 if workerThread is not None:
                     workerThread.End(False) 
@@ -131,10 +167,9 @@ class MainDialog(c4d.gui.GeDialog):
                 self.Enable(ids.GRP_FACESHIFT,False)
                 self.Enable(ids.GRP_RECORDING,False)
                 self.SetString(ids.BTN_CONNECT,"Connect")
-                if faceshiftparser.sock is not None:
-                    faceshiftparser.sock.close()
                 if workerThread is not None:
                     workerThread.End(False) 
+                self.userarea.draw([])
                 self.SetTimer(0)
             
         
@@ -142,21 +177,40 @@ class MainDialog(c4d.gui.GeDialog):
             if not (type(self.linkBox.GetLink()) is c4d.BaseObject):
                 self.linkBox.SetLink(self.targetLink)# if the dragged object is no c4d.BaseObject, reset the Old Link-Target
             elif (type(self.linkBox.GetLink())) is c4d.BaseObject:
-                pass#if the dragged object is a c4d-BaseObject, it will get updated in "maindialogHelpers.setValues(self)a"
-        
+                returner=maindialogHelpers.registerNewtarget(self,self.linkBox.GetLink())#if the dragged object is a c4d-BaseObject, it will get updated in "maindialogHelpers.setValues(self)a"
+                if returner==False:
+                    self.linkBox.SetLink(self.targetLink)
         if id == ids.BTN_CREATE_TARGET:
             if exchangeData is None:
                 exchangeData  = faceShiftData.ExchangeData()  
             maindialogHelpers.createNewTarget(self)
             print "Use Target"
         if id == ids.BTN_CREATE_TARGET:
-            print "Create Target"
+            pass#print "Create Target"
         if id == ids.BTN_STARTREC:
             print "START RECORDING"
-            exchangeData.recording=True
-        if id == ids.BTN_STOPREC:
+            if exchangeData.isRecording==False:
+                self.SetString(ids.BTN_STARTREC,"Stop Recording")
+                if len(exchangeData.recordetFrames)>0:
+                    print "Shit "+str(len(exchangeData.recordetFrames))
+                exchangeData.recordetFrames=[]
+                self.Enable(ids.BTN_ADDREC,False)
+                c4d.EventAdd(c4d.EVENT_ANIMATE) 
+                exchangeData.startRecTimeC4D=c4d.documents.GetActiveDocument().GetTime().Get()*1000
+                print (exchangeData.startRecTimeC4D)
+                exchangeData.startRecTimeFS=-1
+                exchangeData.isRecording=True
+                exchangeData.doneRecTime=0
+            elif exchangeData.isRecording==True:
+                self.SetString(ids.BTN_STARTREC,"Start Recording")
+                exchangeData.isRecording=False
+                self.Enable(ids.BTN_ADDREC,True)
+                
+                
+        if id == ids.BTN_ADDREC:
             print "START RECORDING"
-            exchangeData.recording=False
+            maindialogHelpers.addRecording(self,exchangeData)
+            #exchangeData.recording=False
         if id == ids.BTN_CALIBRATE:
             print "CALIBRATE"
             exchangeData.remoteMessage=44544
@@ -172,9 +226,12 @@ class MainDialog(c4d.gui.GeDialog):
         #if id == ids.BTN_GETBLENDSHAPENAMES:
         #    print "GETBLENDSHAPENAMES"
         #    exchangeData.remoteMessage=44744
-        #if id == ids.BTN_GETRIG:
-        #    print "GETRIG"
-        #    exchangeData.remoteMessage=44844
+        if id == ids.MENU_FILE_LOADRIG:
+            print "GETRIG"
+            exchangeData.remoteMessage=44844
+        if id == ids.MENU_FILE_LOADREC:
+            print "GETRIG"
+            fileloader.main()
            
         #if id == ids.MENU_PRESET_LOAD:   
         #    exportResult=self.loadPreset()  

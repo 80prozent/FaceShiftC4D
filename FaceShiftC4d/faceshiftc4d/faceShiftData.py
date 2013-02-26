@@ -3,11 +3,35 @@ from c4d import documents
 import os
 from faceshiftc4d import ids
 from faceshiftc4d import canvas
-from faceshiftc4d import faceshiftparser
 
 from xml.dom import minidom
 import xml.dom.minidom as dom
+
+class RecordetFrame(object):
+    frameTime=0
+    headRotation=None
+    headPosition=None
+    blendShapeValues=[]
+    eyeGazeValues=[]
+    markerPositions=[]
+    def __init__(self, _frameTime):
+        self.frameTime=_frameTime
+        self.headRotation=c4d.Vector()
+        self.headPosition=c4d.Vector()
+        self.blendShapeValues=[]
+        self.eyeGazeValues=[]
+        self.markerPositions=[]
+        
 class ExchangeData(object): 
+    recordetFrames=[]
+    startRecTimeC4D=0
+    startRecTimeFS=-1
+    doneRecTime=0
+    isRecording=False
+    curC4dTime=0
+    
+    isNew=True
+    
     calcObj=None
     connected=False 
     frameSuccess=0 

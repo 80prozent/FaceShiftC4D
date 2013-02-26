@@ -6,28 +6,31 @@ import socket
 import sys
 
 from faceshiftc4d import ids
+from faceshiftc4d import faceShiftData
 
-sock=None
 class FaceShiftParser(object):  
     connected=False 
     exchangeData=0 
+    sock=None
+    isRecordingInStream=False
     def __init__(self,workerThread,exchangeData):
         global sock
         self.exchangeData=exchangeData
         self.workerThread=workerThread   
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         #sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         #sock.setblocking(0)
         #sock.bind( ("localhost", self.port) )
         self.connectToFaceShift() 
-        sock.close() 
-        self.workerThread.End(False)  
+        self.sock.close() 
+        if self.workerThread is not None:
+            self.workerThread.End(False)  
   
 
     def connectToFaceShift(self):
         print 'Try to connect'
         try:
-            sock.connect((str(self.exchangeData.host),int(self.exchangeData.port) ))
+            self.sock.connect((str(self.exchangeData.host),int(self.exchangeData.port) ))
  
         except socket.error:
             print 'Socket connect failed! Loop up and try socket again'
@@ -37,23 +40,23 @@ class FaceShiftParser(object):
         while True:
             
             if self.workerThread.TestBreak():
-                sock.close()
+                self.sock.close()
                 return
             if self.exchangeData.remoteMessage!=0:
                 blockIDsend=struct.pack("H", self.exchangeData.remoteMessage) # i = int, I = unsigned int
                 blockIDsend+=struct.pack("H", 1) # i = int, I = unsigned int
                 blockIDsend+=struct.pack("I", 0) # i = int, I = unsigned int
                 try:
-                    sock.send(blockIDsend)
+                    self.sock.send(blockIDsend)
                 except socket.error:
                     print 'Socket connect failed! Loop up and try socket again'
                     return
                 self.exchangeData.remoteMessage=0
             try:
-                received = sock.recv(64*1024)
+                received = self.sock.recv(64*1024)
                 
             except: 
-                sock.close()
+                self.sock.close()
                 print "Could not read Block-Header"
                 return
                 
@@ -70,9 +73,11 @@ class FaceShiftParser(object):
                 #print "exitFrameReader"
 
 
-
     def readProtokollHeader(self,received):
     
+        if self.workerThread.TestBreak():
+            self.sock.close()
+            return 0
         returnReadBytes=0
         reciv=received[0]+received[1]
         blockID=struct.unpack('H', reciv)[0]
@@ -87,9 +92,12 @@ class FaceShiftParser(object):
         return returnReadBytes
 
             
-    def readProtokoll(self,received,blockID):    
-        self.exchangeData.hasChanged=1         
-        if blockID==33433:        
+    def readProtokoll(self,received,blockID):   
+        if blockID==33433:   
+            self.exchangeData.isNew=True   
+            self.isRecordingInStream=False
+            if self.exchangeData.isRecording==True:
+                self.isRecordingInStream=True
             self.readStandartBlock(received)
         if blockID==33533:   
             pass
@@ -124,13 +132,23 @@ class FaceShiftParser(object):
         if blockID[0]==101:
             reciv=received[readerCnt+1]+received[readerCnt+2]+received[readerCnt+3]+received[readerCnt+4]+received[readerCnt+5]+received[readerCnt+6]+received[readerCnt+7]+received[readerCnt+8]
             readerCnt+=8
-            frameTime=struct.unpack('d', reciv)
-            self.exchangeData.frameTime=frameTime[0]
-            #print "Frame - frameTime = "+str(frameTime)
+            frameTime=struct.unpack('d', reciv)[0]
             reciv=received[readerCnt+1]
             readerCnt+=1
-            tracksuccess=struct.unpack('B', reciv)
-            self.exchangeData.frameSuccess=tracksuccess[0]
+            tracksuccess=struct.unpack('B', reciv)[0]
+            self.exchangeData.frameSuccess=tracksuccess
+            self.exchangeData.frameTime=frameTime
+            if self.isRecordingInStream==True:
+                if self.exchangeData.startRecTimeFS==-1:
+                    self.exchangeData.startRecTimeFS=frameTime
+                newFrameTime=frameTime-self.exchangeData.startRecTimeFS
+                if newFrameTime>0:
+                    self.exchangeData.doneRecTime+=(newFrameTime)
+                self.exchangeData.startRecTimeFS=frameTime
+                newRenderedFrame=faceShiftData.RecordetFrame(self.exchangeData.doneRecTime)
+                if tracksuccess==1:
+                    self.exchangeData.recordetFrames.append(newRenderedFrame)
+            #print "Frame - frameTime = "+str(frameTime)
             return readerCnt
         
         if blockID[0]==102:
@@ -158,6 +176,9 @@ class FaceShiftParser(object):
             newMatrix = quaternionToMatrix(float(quaternion1),float(quaternion2),float(quaternion3),float(quaternion4))
             self.exchangeData.rotationVector=(c4d.utils.MatrixToHPB(newMatrix))
             self.exchangeData.positionVector=(c4d.Vector(transX,transY,transZ))
+            if self.isRecordingInStream==True:
+                self.exchangeData.recordetFrames[len(self.exchangeData.recordetFrames)-1].headRotation=self.exchangeData.rotationVector
+                self.exchangeData.recordetFrames[len(self.exchangeData.recordetFrames)-1].headPosition=self.exchangeData.positionVector
             return readerCnt
             
         if blockID[0]==103:#Blendshapes
@@ -169,8 +190,11 @@ class FaceShiftParser(object):
             while bsCnt<blendShapesCnt[0]:
                 reciv=received[readerCnt+1]+received[readerCnt+2]+received[readerCnt+3]+received[readerCnt+4]
                 readerCnt+=4
-                blendShapesValue=struct.unpack('f', reciv)
-                self.exchangeData.blendShapes.append(blendShapesValue[0])
+                blendShapesValue=struct.unpack('f', reciv)[0]
+                self.exchangeData.blendShapes.append(blendShapesValue)
+                if self.isRecordingInStream==True:
+                    self.exchangeData.recordetFrames[len(self.exchangeData.recordetFrames)-1].blendShapeValues.append(blendShapesValue)
+                
                 bsCnt+=1
                 #print "Blendshapes - "+str(bsCnt)+" blendShapesValue = "+str(blendShapesValue)
             return readerCnt
@@ -179,20 +203,25 @@ class FaceShiftParser(object):
             self.exchangeData.eyeGazeValues=[]
             reciv=received[readerCnt+1]+received[readerCnt+2]+received[readerCnt+3]+received[readerCnt+4]
             readerCnt+=4
-            pose1=struct.unpack('f', reciv)
-            self.exchangeData.eyeGazeValues.append(pose1[0])
+            pose1=struct.unpack('f', reciv)[0]
+            self.exchangeData.eyeGazeValues.append(pose1)
             reciv=received[readerCnt+1]+received[readerCnt+2]+received[readerCnt+3]+received[readerCnt+4]
             readerCnt+=4
-            pose2=struct.unpack('f', reciv)
-            self.exchangeData.eyeGazeValues.append(pose2[0])
+            pose2=struct.unpack('f', reciv)[0]
+            self.exchangeData.eyeGazeValues.append(pose2)
             reciv=received[readerCnt+1]+received[readerCnt+2]+received[readerCnt+3]+received[readerCnt+4]
             readerCnt+=4
-            pose3=struct.unpack('f', reciv)
-            self.exchangeData.eyeGazeValues.append(pose3[0])
+            pose3=struct.unpack('f', reciv)[0]
+            self.exchangeData.eyeGazeValues.append(pose3)
             reciv=received[readerCnt+1]+received[readerCnt+2]+received[readerCnt+3]+received[readerCnt+4]
             readerCnt+=4
-            pose4=struct.unpack('f', reciv)
-            self.exchangeData.eyeGazeValues.append(pose4[0])
+            pose4=struct.unpack('f', reciv)[0]
+            self.exchangeData.eyeGazeValues.append(pose4)
+            if self.isRecordingInStream==True:
+                self.exchangeData.recordetFrames[len(self.exchangeData.recordetFrames)-1].eyeGazeValues.append(pose1)
+                self.exchangeData.recordetFrames[len(self.exchangeData.recordetFrames)-1].eyeGazeValues.append(pose2)
+                self.exchangeData.recordetFrames[len(self.exchangeData.recordetFrames)-1].eyeGazeValues.append(pose3)
+                self.exchangeData.recordetFrames[len(self.exchangeData.recordetFrames)-1].eyeGazeValues.append(pose4)
             return readerCnt
             
         if blockID[0]==105:#Markers
@@ -212,6 +241,8 @@ class FaceShiftParser(object):
                 markerz=struct.unpack('f', reciv)
                 newMarker=c4d.Vector(markerx[0],markery[0],markerz[0])
                 self.exchangeData.markers.append(newMarker)
+                if self.isRecordingInStream==True:
+                    self.exchangeData.recordetFrames[len(self.exchangeData.recordetFrames)-1].markerPositions.append(newMarker)
                 bsCnt+=1
             return readerCnt
         return readerCnt
