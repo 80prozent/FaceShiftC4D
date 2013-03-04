@@ -14,13 +14,15 @@ class RecordetFrame(object):
     blendShapeValues=[]
     eyeGazeValues=[]
     markerPositions=[]
-    def __init__(self, _frameTime):
+    frameSuccess=0
+    def __init__(self, _frameTime,frameSuccess):
         self.frameTime=_frameTime
-        self.headRotation=c4d.Vector()
+        self.headRotation=c4d.Matrix()
         self.headPosition=c4d.Vector()
         self.blendShapeValues=[]
         self.eyeGazeValues=[]
         self.markerPositions=[]
+        self.frameSuccess=frameSuccess
         
 class ExchangeData(object): 
     recordetFrames=[]
@@ -51,9 +53,8 @@ class ExchangeData(object):
     registeredMarkerTargets=[] 
     registeredBlendShapeTargets=[]
     registeredBlendShapeNames=[] 
-    
-    def __init__(self):
-        print "THREAD CREATES MAINDATA"    
+    connected=0
+    def __init__(self):  
         self.rotationVector=c4d.Vector()
         self.positionVector=c4d.Vector()
         self.frameSuccess=0 
@@ -64,6 +65,7 @@ class ExchangeData(object):
         self.blendShapes=[]
         self.eyeGazeValues=[]
         self.registeredBlendShapeNames=[] 
+        self.connected=0
     
         shapeCnt=0
         while shapeCnt<48:

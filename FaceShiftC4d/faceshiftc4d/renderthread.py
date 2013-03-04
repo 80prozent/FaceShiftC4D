@@ -14,10 +14,13 @@ class RenderThread(C4DThread):
     
     bmp = None
     rd = None
+    typeOfRender=0
+    continious=False
+    def __init__(self, aDoc, typeOfRender,aFlags,continious=False):
     
-    def __init__(self, aDoc, aFlags):
-    
+        self.continious = continious
         self._doc = aDoc
+        self.typeOfRender=typeOfRender
         self._flags = aFlags
         
         self.rd = self._doc.GetActiveRenderData()
@@ -26,11 +29,24 @@ class RenderThread(C4DThread):
         self.bmp.Init(int(self.rd[c4d.RDATA_XRES_VIRTUAL]), int(self.rd[c4d.RDATA_YRES_VIRTUAL]), depth=24)
 
     def Main(self):
-
-        result=documents.RenderDocument(self._doc, self.rd.GetData(), self.bmp, self._flags,self.Get())
-        #print result
-        if result==c4d.RENDERRESULT_OK:
-            pass#print "RENDER OK"
+        result=c4d.RENDERRESULT_OK
+        if self.continious==False:
+            result=documents.RenderDocument(self._doc, self.rd.GetData(), self.bmp, self._flags,self.Get())
+            if self.typeOfRender==ids.TABGRP_LIVESTREAM:
+                c4d.SpecialEventAdd(ids.EVT_FINISHEDRENDER1)
+            if self.typeOfRender==ids.TABGRP_EXPRESSIONMAPPING:
+                c4d.SpecialEventAdd(ids.EVT_FINISHEDRENDER2)
+        if self.continious==True:
+            while result==c4d.RENDERRESULT_OK:
+                if self.TestBreak():
+                    return
+                result=documents.RenderDocument(self._doc, self.rd.GetData(), self.bmp, self._flags,self.Get())
+            #print result
+                if self.typeOfRender==ids.TABGRP_LIVESTREAM:
+                    c4d.SpecialEventAdd(ids.EVT_FINISHEDRENDER1)
+                if self.typeOfRender==ids.TABGRP_EXPRESSIONMAPPING:
+                    c4d.SpecialEventAdd(ids.EVT_FINISHEDRENDER2)
+                pass#print "RENDER OK"
         if result==c4d.RENDERRESULT_OUTOFMEMORY:
             pass#print "RENDER OUTOFMEMORY"
         if result==c4d.RENDERRESULT_ASSETMISSING:
@@ -41,4 +57,3 @@ class RenderThread(C4DThread):
             pass#print "RENDER USERBREAK"
         if result==c4d.RENDERRESULT_GICACHEMISSING:
             pass#print "RENDER GICACHEMISSING"
-        c4d.SpecialEventAdd(ids.PLUGINID)

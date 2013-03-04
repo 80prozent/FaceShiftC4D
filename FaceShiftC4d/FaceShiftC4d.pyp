@@ -17,6 +17,7 @@ from faceshiftc4d import ids
 from faceshiftc4d import cmddata
 from faceshiftc4d import maindialog
 from faceshiftc4d import maindialogCreator
+from faceshiftc4d import canvasShapes
 
 # whenever the plugin recieves a message that suggest all threads should close, we close down all Threads
 def PluginMessage(id, data):
@@ -28,6 +29,7 @@ def PluginMessage(id, data):
 # all modules using the c4d-res system to retrieve text in correct language, needs to init the '__res__' here
 maindialog.__res__ = __res__
 maindialogCreator.__res__ = __res__
+canvasShapes.__res__ = __res__
 
 # registers the plugin. initiates a instance of 'cmddata.CMDData()' 
 if __name__ == "__main__":

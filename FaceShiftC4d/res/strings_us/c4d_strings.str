@@ -3,6 +3,7 @@
 STRINGTABLE
 {
     STR_TITLE                   "FaceShiftC4d";
+    STR_COLUMN_TITLE         "Shape";
     
     MENU_FILE                   "File";
     MENU_FILE_CLEAR                "Clear Retargetting";
@@ -13,18 +14,43 @@ STRINGTABLE
     MENU_FILE_LOADREC               "Load Recording";
     MENU_FILE_SAVEREC              "Save Recording";
     
+    MENU_MAPPING                     "Mapping";
+    MENU_MAPPING_TRAIN               "Train";
+    MENU_MAPPING_CONFLICTS           "Check for Confilcts";
+    MENU_MAPPING_SHOW                "Show";
+    MENU_MAPPING_SHOW1               "Test";
+    MENU_MAPPING_SHOW2               "Test2";
+    MENU_MAPPING_SELECT              "Select";
+    MENU_MAPPING_SELECT1             "Test1";
+    MENU_MAPPING_SELECT2            "Test2";
+    
     MENU_HELP                   "Help";
     MENU_HELP_HELP              "Help";
     MENU_HELP_ABOUT             "About";
     
     TAB_ALL                      "";
     TABGRP_LIVESTREAM            "LiveStreaming";
-    TABGRP_MAPPING               "Mapping";
+    TABGRP_EXPRESSIONMAPPING     "Expression Mapping";
+    TABGRP_EYEMAPPING            "Eye Mapping";
+    TABGRP_EYEGAZE               "Eye Gaze";
+    TABGRP_HEADPOSE              "Head Pose";
+    TABGRP_MAPPING               "Basic";
+    TABGRP_POSES                 "Pose-Manager";
+    TABGRP_TARGETS               "Expression-Targets";
+    
     GRP_NETWORK                  "Network";
     GRP_FACESHIFTUSERDATA        "FaceShift-UserData";
     GRP_FACESHIFT                "FaceShift";
     GRP_RECORDING                "Recording";
     
+    
+    TMP_SHAPES                 "Shapes";    
+    TMP_HEAD_TRANS                 "Head Trans";     
+    TMP_HEAD_ROT                 "Head Rot";    
+    TMP_EYE_R                 "Eye R";    
+    TMP_EYE_L                 "Eye L";
+    
+    TXT_PORT                 "Port:";
     
     TXT_PORT                 "Port:";
     TXT_HOST                 "Host:";
@@ -39,6 +65,7 @@ STRINGTABLE
     TXT_HEADPOSE            "Head Pose:";
     TXT_HEADPOSE1           "Relative";
     TXT_HEADPOSE2           "Absolute";
+    STR_COMBO_PREVDOC       "Preview Doc = ";
             
     BTN_STARTREC            "Start Recording";
     TXT_FRAMES              "Frames = ";
@@ -47,5 +74,74 @@ STRINGTABLE
     CBOX_PLAYBACK           "Playback C4D-TimeLine";
     BTN_ADDREC             "Add Recording";
     
+
+    POSE_BTN_RESET               "Reset";
+    POSE_BTN_ADD                 "Add";
+    POSE_BTN_REMOVE              "Remove";
+    POSE_BTN_SELECT              "Select";
+    POSE_CBOX_RECURSIVE          "Recursive";
+
+    POSE_GRP_TARGETS              "Targets";
+    POSE1_GRP_POSE                "Pose";
+
+    POSE1_BTN_SAVE            "Save";
+    POSE1_BTN_RESET           "Reset";
+    POSE1_BTN_CLEAR           "Clear";
+
+    POSE1_STR_COMBO_PREVDOC     "Preview Doc =";
+    POSE2_BTN_RESETSLIDERS      "Reset Slider";
+    POSE2_BTN_SAVE              "Save";
+    POSE2_BTN_NEW               "New";
+    POSE2_BTN_REMOVE            "Remove";
+    POSE2_BTN_RESET             "Reset";
+    POSE2_BTN_RECORD            "Record";
+    POSE2_STR_NAME            "Pose-Name";
+
+    POSE3_GRP_OBJECTS           "Objects";
+    POSE3_GRP_TAGS              "Tags";
+    POSE3_GRP_MATS              "Materials";
+    POSE3_GRP_ATTRIBUTES         "Attributes";
+
+    HEAD_BTN_RESET              "Reset";
+    HEAD_BTN_ADD                "Add";
+    HEAD_BTN_REMOVE             "Remove";
+    HEAD_CBOX_ACTIVATE          "Activate";
+    
+    HEAD_GPR_C4DNODE            "Matrix";
+    HEAD_STR_SCALE              "Scale";
+    HEAD_STR_UPVECTOR           "Up";
+    HEAD_STR_FRONTVECTOR        "Front";
+    HEAD_STR_TRANSLATION        "Translate";
+    HEAD_STR_ROTATION           "Rotation";
+    HEAD_CBOX_TRANSLATIONX      "X";
+    HEAD_CBOX_TRANSLATIONY      "Y";
+    HEAD_CBOX_TRANSLATIONZ      "Z";
+    HEAD_CBOX_ROTATIONX         "H";
+    HEAD_CBOX_ROTATIONY         "P";
+    HEAD_CBOX_ROTATIONZ         "B";
+    HEAD_GPR_PREVIEW            "Preview";
+    HEAD_STR_PREVIEWTRANS       "Translate";
+    HEAD_STR_PREVIEWROT         "Rotate";
+
+    HEAD_BTN_SELECT             "Select";
+    HEAD_BTN_RECONNECT          "Reconnect";
+    HEAD_GRP_VECTOR             "Vector";
+    HEAD_GRP_USE                "Use";
+    
+    
+    EYEMAP_STR_RIGHT_H         "Right";
+    EYEMAP_STR_RIGHT_V         "Right";
+    EYEMAP_STR_LEFT_H          "Left";
+    EYEMAP_STR_LEFT_V           "Left";
+    EYEMAP_STR_HORIZONTAL         "Horizontal:";
+    EYEMAP_STR_VERTICAL         "Vertical:  ";
+    EYEMAP_BTN_SAVE             "Save";
+    EYEMAP_BTN_RESET           "Reset";
+    EYEMAP_BTN_CLEAR           "Clear";
+    
+    EYEGAZE_CBOX_ACTIVATE         "Vertical:  ";
+    EYEGAZE_BTN_ADD             "Save";
+    EYEGAZE_BTN_RESET           "Reset";
+    EYEGAZE_BTN_REMOVE           "Clear";
     
 }
