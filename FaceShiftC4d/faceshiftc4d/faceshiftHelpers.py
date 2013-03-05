@@ -122,7 +122,7 @@ def registerNewtarget(mainDialog,targetOBJ):
     mainDialog.eyeGazeTargets=[]
     for id, bc in targetOBJ.GetUserDataContainer():
         userDataCount+=1
-        if userDataCount<=48:
+        if userDataCount<=49 and userDataCount>1:
             #print "bc[c4d.DESC_UNIT]  = "+str(targetOBJ[id])+"c4d.DESC_UNIT_PERCENT  /  =  "+str(c4d.DESC_UNIT_PERCENT)            
             if bc[c4d.DESC_UNIT] == c4d.DESC_UNIT_PERCENT:
                 #print "Could Set Target Object"
@@ -132,14 +132,14 @@ def registerNewtarget(mainDialog,targetOBJ):
                 mainDialog.eyeGazeTargets=oldEyes
                 print "Could not set new Target Object"
                 return False
-        if userDataCount>48:
+        if userDataCount>49:
             if bc[c4d.DESC_UNIT] == c4d.DESC_UNIT_REAL:
                 mainDialog.eyeGazeTargets.append(id)
             if bc[c4d.DESC_UNIT] != c4d.DESC_UNIT_REAL:
                 mainDialog.blendShapeTargets=oldBlends
                 mainDialog.eyeGazeTargets=oldEyes  
                 return False   
-        if userDataCount>52: 
+        if userDataCount>53: 
             break
     if userDataCount==0:
         createNewUserData(mainDialog,targetOBJ)
