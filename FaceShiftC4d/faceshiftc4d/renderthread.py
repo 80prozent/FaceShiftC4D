@@ -26,7 +26,7 @@ class RenderThread(C4DThread):
         self.rd = self._doc.GetActiveRenderData()
         
         self.bmp = bitmaps.BaseBitmap()
-        self.bmp.Init(int(self.rd[c4d.RDATA_XRES_VIRTUAL]), int(self.rd[c4d.RDATA_YRES_VIRTUAL]), depth=24)
+        self.bmp.Init(int(round(self.rd[c4d.RDATA_XRES_VIRTUAL])), int(round(self.rd[c4d.RDATA_YRES_VIRTUAL])), depth=24)
 
     def Main(self):
         result=c4d.RENDERRESULT_OK

@@ -19,7 +19,7 @@ def createLayout(mainDialog):
     #mainDialog.MenuAddString(ids.MENU_FILE_SAVERIG, c4d.plugins.GeLoadString(ids.MENU_FILE_SAVERIG))
     #mainDialog.MenuAddSeparator()
     mainDialog.MenuAddString(ids.MENU_FILE_LOADREC, c4d.plugins.GeLoadString(ids.MENU_FILE_LOADREC))
-    mainDialog.MenuAddString(ids.MENU_FILE_SAVEREC, c4d.plugins.GeLoadString(ids.MENU_FILE_SAVEREC))
+    #mainDialog.MenuAddString(ids.MENU_FILE_SAVEREC, c4d.plugins.GeLoadString(ids.MENU_FILE_SAVEREC))
     #mainDialog.MenuSubEnd()
     #mainDialog.MenuSubBegin(c4d.plugins.GeLoadString(ids.MENU_MAPPING))
     #mainDialog.MenuAddString(ids.MENU_MAPPING_TRAIN, c4d.plugins.GeLoadString(ids.MENU_MAPPING_TRAIN))
@@ -109,7 +109,7 @@ def createLayout(mainDialog):
     mainDialog.GroupBorder(c4d.BORDER_THIN_IN) 
     mainDialog.GroupBorderSpace(10, 5, 10, 5)
     mainDialog.GroupSpace(20,5)        
-    mainDialog.element = mainDialog.AddCheckbox(ids.CBOX_LIVE, flags=c4d.BFH_LEFT, initw=150, inith=0, name=c4d.plugins.GeLoadString(ids.CBOX_LIVE))
+    #mainDialog.element = mainDialog.AddCheckbox(ids.CBOX_LIVE, flags=c4d.BFH_LEFT, initw=150, inith=0, name=c4d.plugins.GeLoadString(ids.CBOX_LIVE))
     mainDialog.createButton = mainDialog.AddButton(ids.BTN_CALIBRATE, flags=c4d.BFH_SCALEFIT,initw=40, inith=20,name=c4d.plugins.GeLoadString(ids.BTN_CALIBRATE))
                     #Group Level 5 
     mainDialog.GroupBegin(0,c4d.BFH_SCALEFIT,2,1,"")
@@ -137,7 +137,7 @@ def createLayout(mainDialog):
     mainDialog.AddStaticText(ids.TXT_SEC,c4d.BFH_RIGHT|c4d.BFH_SCALEFIT,40,0,c4d.plugins.GeLoadString(ids.TXT_SEC),c4d.BORDER_NONE)
                     #End Level 5
     mainDialog.GroupEnd()
-    mainDialog.element = mainDialog.AddCheckbox(ids.CBOX_PLAYBACK, flags=c4d.BFH_SCALEFIT, initw=180, inith=0, name=c4d.plugins.GeLoadString(ids.CBOX_PLAYBACK))
+    #mainDialog.element = mainDialog.AddCheckbox(ids.CBOX_PLAYBACK, flags=c4d.BFH_SCALEFIT, initw=180, inith=0, name=c4d.plugins.GeLoadString(ids.CBOX_PLAYBACK))
     mainDialog.createButton = mainDialog.AddButton(ids.BTN_ADDREC, flags=c4d.BFH_SCALEFIT,initw=40, inith=20,name=c4d.plugins.GeLoadString(ids.BTN_ADDREC))
                 #End Level 4
     mainDialog.GroupEnd()

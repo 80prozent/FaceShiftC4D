@@ -37,14 +37,15 @@ def addRecording(mainDialog,exchangeData):
             mainDialog.targetLink.InsertTrackSorted(newTrack)
         matrixTracks.append(newTrack)
         trackCount+=1
-    print ("frames to do")+str(len(exchangeData.recordetFrames))
+    #print ("frames to do")+str(len(exchangeData.recordetFrames))
     frameCnt=0
     doc=c4d.documents.GetActiveDocument()
     testobj=c4d.BaseObject(c4d.Onull)
+    curTime=c4d.documents.GetActiveDocument().GetTime().Get()*1000
     while frameCnt<len(exchangeData.recordetFrames):
         curFrame=exchangeData.recordetFrames[frameCnt]
         frameCnt+=1
-        frameTime=c4d.BaseTime(float(float(exchangeData.startRecTimeC4D)+float(curFrame.frameTime))/1000)
+        frameTime=c4d.BaseTime(float(float(curTime)+float(curFrame.frameTime))/1000)
 
         
         curve=matrixTracks[0].GetCurve()

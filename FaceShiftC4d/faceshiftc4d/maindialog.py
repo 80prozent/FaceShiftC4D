@@ -514,8 +514,9 @@ class MainDialog(c4d.gui.GeDialog):
                         allOutports=mainNode.GetOutPorts()
                         for tag in poseTags:
                             if tag.GetType()==1024237:
-                                newNode = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_OBJECT, insert=None, x=500, y=self.ycounter) #create Object node and place in X,Y coord
-                                self.ycounter+=100
+                                newNode = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_OBJECT, insert=None, x=self.xcounter, y=self.ycounter) #create Object node and place in X,Y coord
+                                self.ycounter+=20
+                                self.xcounter+=50
                                 newNode[c4d.GV_OBJECT_OBJECT_ID] = tag
                                 morphConnector=[]
                                 morphCount=1
@@ -554,8 +555,9 @@ class MainDialog(c4d.gui.GeDialog):
                             rotationNode=mainNode.GetPort(c4d.ID_BASEOBJECT_REL_POSITION)
                             if rotationNode is None:
                                 rotationNode = mainNode.AddPort(c4d.GV_PORT_OUTPUT, c4d.ID_BASEOBJECT_REL_POSITION) #add a position input port to the object node
-                            newNode = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_OBJECT, insert=None, x=500, y=self.ycounter) #create Object node and place in X,Y coord
-                            self.ycounter+=100
+                            newNode = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_OBJECT, insert=None, x=self.xcounter, y=self.ycounter) #create Object node and place in X,Y coord
+                            self.ycounter+=20
+                            self.xcounter+=20
                             newNode[c4d.GV_OBJECT_OBJECT_ID] = headObj
                             newPose=newNode.AddPort(c4d.GV_PORT_INPUT, c4d.ID_BASEOBJECT_REL_POSITION) #add a position input port to the object node
                             rotationNode.Connect(newPose)                    
@@ -578,8 +580,9 @@ class MainDialog(c4d.gui.GeDialog):
                             rotationNode=mainNode.GetPort(c4d.ID_BASEOBJECT_REL_ROTATION)
                             if rotationNode is None:
                                 rotationNode = mainNode.AddPort(c4d.GV_PORT_OUTPUT, c4d.ID_BASEOBJECT_REL_ROTATION) #add a position input port to the object node
-                            newNode = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_OBJECT, insert=None, x=500, y=self.ycounter) #create Object node and place in X,Y coord
-                            self.ycounter+=100
+                            newNode = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_OBJECT, insert=None, x=self.xcounter, y=self.ycounter) #create Object node and place in X,Y coord
+                            self.ycounter+=20
+                            self.xcounter+=20
                             newNode[c4d.GV_OBJECT_OBJECT_ID] = headObj
                             newPose=newNode.AddPort(c4d.GV_PORT_INPUT, c4d.ID_BASEOBJECT_REL_ROTATION) #add a position input port to the object node
                             rotationNode.Connect(newPose)                    
@@ -600,21 +603,22 @@ class MainDialog(c4d.gui.GeDialog):
                             #node1 = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_CONDITION, insert=None, x=300, y=200) #create condition node and place in X,Y coord
                             mainNode=nodemaster.GetRoot().GetChildren()[1]
                             allOutports=mainNode.GetOutPorts()
-                            node1 = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_RANGEMAPPER, insert=None, x=450, y=self.ycounter) #create condition node and place in X,Y coord
+                            node1 = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_RANGEMAPPER, insert=None, x=self.xcounter, y=self.ycounter) #create condition node and place in X,Y coord
                             node1[c4d.GV_RANGEMAPPER_OUTPUT_DEFS]=1
                             node1[c4d.GV_RANGEMAPPER_RANGE11]=-90
                             node1[c4d.GV_RANGEMAPPER_RANGE12]=90
                             node1[c4d.GV_RANGEMAPPER_RANGE21]=-90*(math.pi/180)
                             node1[c4d.GV_RANGEMAPPER_RANGE22]=90*(math.pi/180)
-                            newNode = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_OBJECT, insert=None, x=550, y=self.ycounter) 
-                            self.ycounter+=200 
-                            node2 = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_RANGEMAPPER, insert=None, x=450, y=self.ycounter) #create condition node and place in X,Y coord
+                            newNode = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_OBJECT, insert=None, x=self.xcounter+200, y=self.ycounter) 
+                            self.ycounter+=20 
+                            node2 = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_RANGEMAPPER, insert=None, x=self.xcounter, y=self.ycounter) #create condition node and place in X,Y coord
                             node2[c4d.GV_RANGEMAPPER_OUTPUT_DEFS]=1
                             node2[c4d.GV_RANGEMAPPER_RANGE11]=-90
                             node2[c4d.GV_RANGEMAPPER_RANGE12]=90
                             node2[c4d.GV_RANGEMAPPER_RANGE21]=-90*(math.pi/180)
                             node2[c4d.GV_RANGEMAPPER_RANGE22]=90*(math.pi/180)
-                            self.ycounter+=200
+                            self.ycounter+=20
+                            self.xcounter+=20
                             newNode[c4d.GV_OBJECT_OBJECT_ID] = headObj
                             shapeCnt=0
                             while shapeCnt < len(allOutports):
@@ -645,21 +649,22 @@ class MainDialog(c4d.gui.GeDialog):
                             #node1 = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_CONDITION, insert=None, x=300, y=200) #create condition node and place in X,Y coord
                             mainNode=nodemaster.GetRoot().GetChildren()[1]
                             allOutports=mainNode.GetOutPorts()
-                            node1 = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_RANGEMAPPER, insert=None, x=450, y=self.ycounter) #create condition node and place in X,Y coord
+                            node1 = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_RANGEMAPPER, insert=None, x=self.xcounter, y=self.ycounter) #create condition node and place in X,Y coord
                             node1[c4d.GV_RANGEMAPPER_OUTPUT_DEFS]=1
                             node1[c4d.GV_RANGEMAPPER_RANGE11]=-90
                             node1[c4d.GV_RANGEMAPPER_RANGE12]=90
                             node1[c4d.GV_RANGEMAPPER_RANGE21]=-90*(math.pi/180)
                             node1[c4d.GV_RANGEMAPPER_RANGE22]=90*(math.pi/180)
-                            newNode = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_OBJECT, insert=None, x=550, y=self.ycounter) 
-                            self.ycounter+=200 
-                            node2 = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_RANGEMAPPER, insert=None, x=450, y=self.ycounter) #create condition node and place in X,Y coord
+                            newNode = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_OBJECT, insert=None, x=self.xcounter+200, y=self.ycounter) 
+                            self.ycounter+=20 
+                            node2 = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_RANGEMAPPER, insert=None, x=self.xcounter, y=self.ycounter) #create condition node and place in X,Y coord
                             node2[c4d.GV_RANGEMAPPER_OUTPUT_DEFS]=1
                             node2[c4d.GV_RANGEMAPPER_RANGE11]=-90
                             node2[c4d.GV_RANGEMAPPER_RANGE12]=90
                             node2[c4d.GV_RANGEMAPPER_RANGE21]=-90*(math.pi/180)
                             node2[c4d.GV_RANGEMAPPER_RANGE22]=90*(math.pi/180)
-                            self.ycounter+=200
+                            self.ycounter+=20
+                            self.xcounter+=20
                             newNode[c4d.GV_OBJECT_OBJECT_ID] = headObj
                             shapeCnt=0
                             while shapeCnt < len(allOutports):
