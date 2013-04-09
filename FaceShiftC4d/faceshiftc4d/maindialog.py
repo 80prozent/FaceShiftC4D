@@ -70,7 +70,8 @@ class MainDialog(c4d.gui.GeDialog):
     newTime=0
     renderer=None
     scrollerHeight=0
-        
+    xcounter=100
+    ycounter=0
     def __init__(self):  
         self.prevMainDocsPathes=[]
         self.prevShapesDocsPathes=[]
