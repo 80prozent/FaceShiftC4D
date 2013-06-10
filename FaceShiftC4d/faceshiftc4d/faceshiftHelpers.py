@@ -12,7 +12,7 @@ def addRecording(mainDialog,exchangeData):
     userDataCount=0
     for id, bc in mainDialog.targetLink.GetUserDataContainer():
         userDataCount+=1
-        if userDataCount<=52:
+        if userDataCount<=53 and userDataCount>1:
             shapeTrack=mainDialog.targetLink.FindCTrack(id)
             if shapeTrack is None:
                 shapeTrack = c4d.CTrack(mainDialog.targetLink, id)
