@@ -4,6 +4,7 @@ import c4d
 from faceshiftc4d import ids   
 from faceshiftc4d import names   
 
+
 def addRecording(mainDialog,exchangeData):
     if mainDialog.targetLink is None:
         createNewTarget(mainDialog)
@@ -174,6 +175,8 @@ def createNewUserData(mainDialog,newContainer):
     #node2.AddPort(c4d.GV_PORT_INPUT, c4d.ID_BASEOBJECT_POSITION) #add a position input port to the object node
     #node1out=node2.AddPort(c4d.GV_PORT_OUTPUT, c4d.ID_BASEOBJECT_REL_POSITION) #add a position output port to the object node
     
+    xpressoNode = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_OBJECT, insert=None, x=500, y=0) #create condition node and place in X,Y coord
+    xpressoNode[c4d.GV_OBJECT_OBJECT_ID]=newXpressoTag
     blendShapeNames=names.blendShapeNames
     shapeCount=0
     bc = c4d.GetCustomDatatypeDefault(c4d.DTYPE_BASELISTLINK) #create default container
@@ -192,7 +195,25 @@ def createNewUserData(mainDialog,newContainer):
         bc[c4d.DESC_STEP] = 0.01
         bc[c4d.DESC_CUSTOMGUI] = c4d.CUSTOMGUI_REALSLIDER   
         element = newContainer.AddUserData(bc)     #add userdata container 
+        bc = c4d.GetCustomDatatypeDefault(c4d.DTYPE_REAL) #create default container
+        bc[c4d.DESC_NAME] = blendShapeNames[shapeCount]
+        #bc[c4d.DESC_UNIT] = c4d.DESC_UNIT_PERCENT
+        bc[c4d.DESC_MIN] = 0.0
+        bc[c4d.DESC_MAX] = 200.0
+        bc[c4d.DESC_MAXSLIDER] = 2.0
+        bc[c4d.DESC_STEP] = 0.0001
+        bc[c4d.DESC_CUSTOMGUI] = c4d.CUSTOMGUI_REALSLIDER   
+        element2 = newXpressoTag.AddUserData(bc)     #add userdata container 
+        newXpressoTag[element2]=1
         newPort=mainNode.AddPort(c4d.GV_PORT_OUTPUT, element) #add a position output port to the object node
+        newPort2=xpressoNode.AddPort(c4d.GV_PORT_OUTPUT, element2) #add a position output port to the object node
+        mathNode = nodemaster.CreateNode(nodemaster.GetRoot(), c4d.ID_OPERATOR_MATH, insert=None, x=700, y=shapeCount*60) #create condition node and place in X,Y coord
+        mathNode[c4d.GV_MATH_FUNCTION_ID]=2
+        mathNode[c4d.ID_BASELIST_NAME]=blendShapeNames[shapeCount]
+        mathNode.GetOutPorts()[0].SetName(blendShapeNames[shapeCount])
+        nodemaster.Message(c4d.MSG_UPDATE)
+        newPort.Connect(mathNode.GetInPorts()[0])
+        newPort2.Connect(mathNode.GetInPorts()[1])
         #print (element)
         mainDialog.blendShapeTargets.append(element)
         shapeCount+=1

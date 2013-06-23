@@ -70,7 +70,7 @@ class MainDialog(c4d.gui.GeDialog):
     newTime=0
     renderer=None
     scrollerHeight=0
-    xcounter=100
+    xcounter=900
     ycounter=0
     def __init__(self):  
         self.prevMainDocsPathes=[]
@@ -528,7 +528,11 @@ class MainDialog(c4d.gui.GeDialog):
                                     self.ycounter+=20
                                     while shapeCnt < len(allOutports):
                                         if allOutports[shapeCnt].GetName(mainNode)==str(tag.GetMorph(morphCount).GetName()):
-                                            allOutports[shapeCnt].Connect(newPose)
+                                            if shapeCnt<48:
+                                                curMathNode=nodemaster.GetRoot().GetChildren()[shapeCnt+3]
+                                                curMathNode.GetOutPorts()[0].Connect(newPose)
+                                            if shapeCnt>=48:                                            
+                                                allOutports[shapeCnt].Connect(newPose)
                                             shapeCnt=len(allOutports)
                                         shapeCnt+=1
                                     morphCount+=1
